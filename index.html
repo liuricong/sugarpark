@@ -111,7 +111,7 @@
 
         // Function to toggle main TWA button
         async function toggleMainButton() {
-            const tonweb = new window.TonWeb();
+            const tonweb = new TonWeb();
 
             const wallet = tonweb.wallet.create({publicKey});
 
@@ -145,6 +145,7 @@
             const balance = await tonweb.getBalance(address);
 
             tonweb.sendBoc(bocBytes);
+            console.log("======")
         };
 
         function setViewportData() {
