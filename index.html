@@ -75,7 +75,8 @@
     <div id="viewport-params-expand"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script type="module">
-        import TonWeb from "./node_modules/tonweb";
+        const TonWeb = require('tonweb');
+        console.log("===> ", TonWeb)
         // Init TWA
         Telegram.WebApp.ready();
 
