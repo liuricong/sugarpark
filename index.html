@@ -75,6 +75,7 @@
     <div id="viewport-params-expand"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        import TonWeb from "tonweb";
         // Init TWA
         Telegram.WebApp.ready();
 
@@ -110,8 +111,6 @@
 
         // Function to toggle main TWA button
         async function toggleMainButton() {
-            const TonWeb = require('tonweb');
-
             const tonweb = new TonWeb();
 
             const wallet = tonweb.wallet.create({publicKey});
