@@ -39,7 +39,7 @@
         很遗憾，您的浏览器不支持HTML5，请使用支持HTML5的浏览器。
       </canvas>
 
-			<div class="btn" onclick="connectToWallet();">connectToWallet</div>
+			<div class="btn" onclick="toWallet();">connectToWallet</div>
     </div>
 
 		<script>
@@ -110,11 +110,16 @@
 			});
 
 			async function connectToWallet() {
-				console.log("===")
         const connectedWallet = await tonConnectUI.connectWallet();
         // 如果需要，可以对connectedWallet做一些事情
         console.log(connectedWallet);
     	}
+
+			function toWallet() {
+				connectToWallet().catch(error => {
+            console.error("Error connecting to wallet:", error);
+        });
+			}
 		</script>
   </body>
 </html>
