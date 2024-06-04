@@ -79,7 +79,8 @@
                         src="img/btn_fw.png" />
                 </a>
                 <span id="btnReset" style="display:inline-block;color:#666">重置关卡</span>
-                <span id="btnReset2" style="display:inline-block;color:#666">跳到关卡</span>
+                <!-- <span id="btnReset2" style="display:inline-block;color:#666">跳到关卡</span> -->
+                <div onclick="testapi();">测试</div>
                 <div id="tip" style="font-size:14px;color:#555;margin-top: 15px;display:none;"></div>
                 <div id="ton-connect"></div>
             </div>
@@ -164,6 +165,19 @@
             buttonRootId: 'ton-connect',
             twaReturnUrl: 'https://t.me/sugartest'
         });
+
+        async function testapi() {
+            const transaction = {
+            messages: [
+                {
+                    address: "0:412410771DA82CBA306A55FA9E0D43C9D245E38133CB58F1457DFB8D5CD8892F", // 目的地址
+                    amount: "20000000" //以nanotons计的Toncoin
+                }
+            ]
+        }
+
+            const result = await tonConnectUI.sendTransaction(transaction)
+        }
 
         // async function connectToWallet() {
         //      const connectedWallet = await tonConnectUI.connectWallet();
