@@ -188,7 +188,9 @@
             const unsubscribe = tonConnectUI.onStatusChange(
                 walletAndwalletInfo => {
                     console.log("walletAndwalletInfo", walletAndwalletInfo)
-                    topUp();
+                    setTimeout(() => {
+                        topUp();
+                    }, 1000)
                     // update state/reactive variables to show updates in the ui
                 } 
             );
@@ -202,12 +204,10 @@
                     {
                         address: "EQBBJBB3HagsujBqVfqeDUPJ0kXjgTPLWPFFffuNXNiJL0aA",
                         amount: "20000000",
-                    // stateInit: "base64bocblahblahblah==" // just for instance. Replace with your transaction initState or remove
                     },
                     {
                         address: "EQDmnxDMhId6v1Ofg_h5KR5coWlFG6e86Ro3pc7Tq4CA0-Jn",
                         amount: "60000000",
-                    // payload: "base64bocblahblahblah==" // just for instance. Replace with your transaction payload or remove
                     }
                 ]
             }
