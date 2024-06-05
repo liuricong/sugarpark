@@ -63,17 +63,19 @@
             height: 50px;
             background-color: #112233;
             color: #fff;
+            margin: 20px 20px;
         }
     </style>
 </head>
 
 <body>
     <main>
-        <a href="jianfengchazhen/index.html">
+        <!-- <a href="jianfengchazhen/index.html">
             <div class="item item0">见缝插针</div>
-        </a>
-        <div class="btn" onclick="testapi();">钱包</div>
-        <div id="ton-connect">钱包</div>
+        </a> -->
+        <div class="btn" onclick="openWallet();">钱包调起</div>
+        <div class="btn" onclick="disconnect();">钱包断开</div>
+        <div id="ton-connect"></div>
 
     </main>
     <div id="viewport"></div>
@@ -81,7 +83,7 @@
     <div id="viewport-params-expand"></div>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script type="module">
+    <script>
         // Init TWA
         Telegram.WebApp.ready();
 
@@ -145,7 +147,6 @@
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://liuricong.github.io/sugarpark/tonconnect-manifest.json',
             buttonRootId: 'ton-connect',
-            twaReturnUrl: 'https://t.me/sugartest'
         });
 
         // 充值
@@ -156,12 +157,70 @@
                     {
                         address: "0:45d9304bb7ba5c7706706481f69893907c1cfffe2df32e9bb8f540b7006ea08d",
                         amount: "10",
-                        stateInit: "te6ccsECEAEAAmEAAAUAOgCEAJEAlgCeAKMAtwC8AMEA6ADzAWYBoQIfAmECATQDAQFjAAAAAAAAAAAgBU/r/ZW62EDK6WrknzSWDCdhjKCIYN0hxUFVgbhaz5kQAAAMfzFtk/QCAJABaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3NpYW5kcmVldi9uZnQvbWFpbi9kZW1vLW5mdC1kYXRhLmpzb24BFP8A9KQT9LzyyAsEAgFiBgUAC6Efn+AOYwICzAgHACPYJkZZ+oAeeLAOeLZZ/mZPaqQCASAMCQIBWAsKAEk7UTQ0z/6QCDXScIAnH8B+kDTP9QwEDUQNOBwbQLTPzAUQzBtgABE+kQwwADy4U2AC3dGRDjgEkvgfBoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABh4A4LZxwmYmZmaqQnjgvlwyoF9IGoYCXgEcAPpj+mfkUEIL+Yeil1HRhkIJAgbiBMIIoFtnnAYGRoaGprBCBflk1FdcYEvgkIH+XhA4NAHJwghCLdxc1BcjL/1AEzxYQJIBAcIAQyMsFUAfPFlAF+gIVy2oSyx/LPyJus5RYzxcBkTLiAckB+wAB9lE2xwXy4ZH6QCHwBvpA0gAx+gALggr68IChIZRTFaCh3iLXCwHDACCSBqGRNuIgwv/y4ZIhjj6CEAUTjZHIUArPFlAMzxZxJEoUVEawcIAQyMsFUAfPFlAF+gIVy2oSyx/LPyJus5RYzxcBkTLiAckB+wAQWJQQKzhb4g8AgAKONCfwBkdAghDVMnbbAW1xcIAQyMsFUAfPFlAF+gIVy2oSyx/LPyJus5RYzxcBkTLiAckB+wCTMDM14lUD8AgN9g5t"
                     }
                 ]
             }
 
             const result = await tonConnectUI.sendTransaction(transaction)
+        }
+
+        async function disconnect() {
+            // 断开钱包
+            await tonConnectUI.disconnect();
+        }
+
+        async function openWallet() {
+            // 获取当前模式状态
+            const currentModalState = tonConnectUI.modalState;
+            console.log("currentModalState", currentModalState)
+            tonConnectUI.closeModal();
+            await tonConnectUI.openModal();
+
+            const unsubscribeModal = tonConnectUI.onModalStateChange(
+                (state) => {
+                    console.log("state", state)
+                    // update state/reactive variables to show updates in the ui
+                    // state.status will be 'opened' or 'closed'
+                    // if state.status is 'closed', you can check state.closeReason to find out the reason
+                }
+            );
+
+            const unsubscribe = tonConnectUI.onStatusChange(
+                walletAndwalletInfo => {
+                    console.log("walletAndwalletInfo", walletAndwalletInfo)
+                    topUp();
+                    // update state/reactive variables to show updates in the ui
+                } 
+            );
+        }
+
+        // 充值
+        async function topUp() {
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 60, // 60 sec
+                messages: [
+                    {
+                        address: "EQBBJBB3HagsujBqVfqeDUPJ0kXjgTPLWPFFffuNXNiJL0aA",
+                        amount: "20000000",
+                    // stateInit: "base64bocblahblahblah==" // just for instance. Replace with your transaction initState or remove
+                    },
+                    {
+                        address: "EQDmnxDMhId6v1Ofg_h5KR5coWlFG6e86Ro3pc7Tq4CA0-Jn",
+                        amount: "60000000",
+                    // payload: "base64bocblahblahblah==" // just for instance. Replace with your transaction payload or remove
+                    }
+                ]
+            }
+
+            try {
+                const result = await tonConnectUI.sendTransaction(transaction);
+
+                // you can use signed boc to find the transaction 
+                const someTxData = await myAppExplorerService.getTransaction(result.boc);
+                alert('Transaction was sent successfully', someTxData);
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         // async function connectToWallet() {
