@@ -73,6 +73,7 @@
         <!-- <a href="jianfengchazhen/index.html">
             <div class="item item0">见缝插针</div>
         </a> -->
+        <div class="btn" onclick="toGame();">前往游戏</div>
         <div class="btn" onclick="openWallet();">钱包调起</div>
         <div class="btn" onclick="disconnect();">钱包断开</div>
         <div id="ton-connect"></div>
@@ -228,7 +229,10 @@
             }
         }
 
-        window.location.href = "https://liuricong.github.io/game"
+
+        function toGame() {
+            window.location.href = "https://liuricong.github.io/game"
+        }
 
         // async function connectToWallet() {
         //      const connectedWallet = await tonConnectUI.connectWallet();
