@@ -1,83 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Telegram Mini Apps Vanilla JS Sample App</title>
-    <style type="text/css">
-        .main {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 40rem;
-            margin: auto;
-            height: 40rem;
-            position: absolute;
-            top: 0;
-            bottom: 0;
+    <style>
+        body {
+            --bg-color: var(--tg-theme-bg-color);
+            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--tg-theme-text-color);
+            margin: 48px 24px;
+            padding: 0;
+            color-scheme: var(--tg-color-scheme);
+        }
+
+        a {
+            color: var(--tg-theme-link-color);
+        }
+        #viewport {
+            position: fixed;
             left: 0;
             right: 0;
+            top: 0;
+            height: var(--tg-viewport-stable-height, 100vh);
+            pointer-events: none;
+            transition: all .2s ease;
+        }
+        #viewport:after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            border-width: 4px;
+            border-style: solid;
+            border-image: linear-gradient(45deg, rgba(64, 224, 208, .5), rgba(173, 255, 47, .5)) 1;
         }
 
-        a:link {
-            text-decoration: none;
+        #viewport-params-size,
+        #viewport-params-expand {
+            content: attr(text);
+            position: absolute;
+            display: inline-block;
+            background: var(--tg-theme-link-color, rgb(64, 224, 208));
+            right: 4px;
+            left: auto;
+            font-size: 8px;
+            padding: 4px;
+            vertical-align: top;
         }
-
-        a:visited {
-            text-decoration: none;
+        #viewport-params-size {
+            top: 4px;
         }
-
-        a:hover {
-            text-decoration: none;
-        }
-
-        a:active {
-            text-decoration: none;
-        }
-
-        .item {
-            width: 12.25rem;
-            height: 12.25rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            background: #112233;
-            margin: 0.5rem;
-            color: #fff;
-            font-size: 2rem;
-        }
-
-        .item0 {
-            background: linear-gradient(to right, rgb(17, 153, 142), rgb(56, 239, 125));
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 200px;
-            height: 50px;
-            background-color: #112233;
-            color: #fff;
-            margin: 20px 20px;
+        #viewport-params-expand {
+            top: 30px;
         }
     </style>
 </head>
 
 <body>
     <main>
-        <!-- <a href="jianfengchazhen/index.html">
-            <div class="item item0">见缝插针</div>
-        </a> -->
-        <div class="btn" onclick="toGame();">前往游戏</div>
-        <div class="btn" onclick="openWallet();">钱包调起</div>
-        <div class="btn" onclick="disconnect();">钱包断开</div>
-        <div id="ton-connect"></div>
+        <div align="center">
+            <a href="https://ton.org/"><img width="48" src="./assets/tapps.png" alt="logo of telegram web apps"></a>
+        </div>
+        <h1>Modals 测试小程序</h1>
+        <button onclick="Telegram.WebApp.showAlert('Hello World!');">Launch Alert 测试小程序</button>
+        <button onclick="showPopup();">Launch Popup</button>
 
+        <h1>Links</h1>
+        <ul>
+            <li>
+                <a href="javascript:Telegram.WebApp.openTelegramLink('https://t.me/trendingapps');">Open link within Telegram</a>
+            </li>
+            <li>
+                <a href="javascript:Telegram.WebApp.openLink('https://ton.org/');">Open link in external browser</a>
+            </li>
+            <li>
+                <a href="javascript:Telegram.WebApp.openLink('https://telegra.ph/api',{try_instant_view:true});">Open link inside Telegram webview</a>
+            </li>
+        </ul>
+
+        <h1>Buttons</h1>
+        <button onclick="Telegram.WebApp.expand();">Expand Webview</button>
+        <button onclick="toggleMainButton();">Toggle Main Button</button>
+
+        <div id="ton-connect"></div>
     </main>
     <div id="viewport"></div>
     <div id="viewport-params-size"></div>
@@ -89,7 +100,7 @@
         Telegram.WebApp.ready();
 
         // Event occurs whenever theme settings are changed in the user's Telegram app (including switching to night mode).
-        Telegram.WebApp.onEvent('themeChanged', function () {
+        Telegram.WebApp.onEvent('themeChanged', function() {
             document.documentElement.className = Telegram.WebApp.colorScheme;
         });
 
@@ -99,7 +110,7 @@
         });
         Telegram.WebApp.MainButton.onClick(function () {
             Telegram.WebApp.showAlert('Main Button was clicked')
-        });
+        });	
         Telegram.WebApp.MainButton.show();
 
         // Function to call showPopup API
@@ -108,10 +119,10 @@
                 title: 'Title',
                 message: 'Some message',
                 buttons: [
-                    { id: 'link', type: 'default', text: 'Open ton.org' },
-                    { type: 'cancel' },
+                    {id: 'link', type: 'default', text: 'Open ton.org'},
+                    {type: 'cancel'},
                 ]
-            }, function (btn) {
+            }, function(btn) {
                 if (btn === 'link') {
                     Telegram.WebApp.openLink('https://ton.org/');
                 }
@@ -129,7 +140,7 @@
 
         function setViewportData() {
             var sizeEl = document.getElementById('viewport-params-size');
-            sizeEl.innerText = 'width: ' + window.innerWidth + ' x ' +
+            sizeEl.innerText = 'width: ' + window.innerWidth + ' x ' + 
                 'height: ' + Telegram.WebApp.viewportStableHeight;
 
             var expandEl = document.querySelector('#viewport-params-expand');
@@ -141,98 +152,15 @@
         setViewportData();
         Telegram.WebApp.onEvent('viewportChanged', setViewportData);
 
-        Telegram.WebApp.onEvent('themeChanged', function () {
+        Telegram.WebApp.onEvent('themeChanged', function() {
             document.body.setAttribute('style', '--bg-color:' + Telegram.WebApp.backgroundColor);
         });
 
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://liuricong.github.io/sugarpark/tonconnect-manifest.json',
             buttonRootId: 'ton-connect',
+            twaReturnUrl: 'https://t.me/sugartest'
         });
-
-        // 充值
-        async function testapi() {
-            const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 360,
-                messages: [
-                    {
-                        address: "0:45d9304bb7ba5c7706706481f69893907c1cfffe2df32e9bb8f540b7006ea08d",
-                        amount: "10",
-                    }
-                ]
-            }
-
-            const result = await tonConnectUI.sendTransaction(transaction)
-        }
-
-        async function disconnect() {
-            // 断开钱包
-            await tonConnectUI.disconnect();
-        }
-
-        async function openWallet() {
-            const currentWallet = tonConnectUI.wallet;
-            if (currentWallet != null) {
-                topUp();
-            }
-
-            // 获取当前模式状态
-            const currentModalState = tonConnectUI.modalState;
-            console.log("currentModalState", currentModalState)
-            tonConnectUI.closeModal();
-            await tonConnectUI.openModal();
-
-            const unsubscribeModal = tonConnectUI.onModalStateChange(
-                (state) => {
-                    console.log("state", state)
-                    // update state/reactive variables to show updates in the ui
-                    // state.status will be 'opened' or 'closed'
-                    // if state.status is 'closed', you can check state.closeReason to find out the reason
-                }
-            );
-
-            const unsubscribe = tonConnectUI.onStatusChange(
-                walletAndwalletInfo => {
-                    console.log("walletAndwalletInfo", walletAndwalletInfo)
-                    setTimeout(() => {
-                        topUp();
-                    }, 1000)
-                    // update state/reactive variables to show updates in the ui
-                } 
-            );
-        }
-
-        // 充值
-        async function topUp() {
-            const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 60, // 60 sec
-                messages: [
-                    {
-                        address: "EQBBJBB3HagsujBqVfqeDUPJ0kXjgTPLWPFFffuNXNiJL0aA",
-                        amount: "20000000",
-                    },
-                    {
-                        address: "EQDmnxDMhId6v1Ofg_h5KR5coWlFG6e86Ro3pc7Tq4CA0-Jn",
-                        amount: "60000000",
-                    }
-                ]
-            }
-
-            try {
-                const result = await tonConnectUI.sendTransaction(transaction);
-
-                // you can use signed boc to find the transaction 
-                const someTxData = await myAppExplorerService.getTransaction(result.boc);
-                alert('Transaction was sent successfully', someTxData);
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-
-        function toGame() {
-            window.location.href = "https://liuricong.github.io/game"
-        }
 
         // async function connectToWallet() {
         //      const connectedWallet = await tonConnectUI.connectWallet();
@@ -241,14 +169,14 @@
         // }
 
         // 调用函数
-        // connectToWallet().catch(error => {
-        //     console.error("Error connecting to wallet:", error);
-        // });
+        connectToWallet().catch(error => {
+            console.error("Error connecting to wallet:", error);
+        });
 
     </script>
+
     <!-- Eruda is console for mobile browsers -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </body>
-
 </html>
